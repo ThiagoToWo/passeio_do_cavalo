@@ -17,6 +17,7 @@ public class PasseioDoCavalo extends JFrame{
 	private JButton[][] tabuleiro = new JButton[8][8];
 	private Map<JButton, int[]> local = new HashMap<>();
 	private ArrayList<JButton> locaisMarcados = new ArrayList<JButton>();
+	JButton[] casasLegais = new JButton[8];
 	
 	private int jogada = 0;
 	
@@ -63,47 +64,50 @@ public class PasseioDoCavalo extends JFrame{
 		setVisible(true);		
 	}
 	
-	private void pintarCasaLegal(JButton casa) {
+	private void setCasaLegal(JButton casa) {
 		
 		int[] casaLocal = local.get(casa);
 		int[] vertical = {-1, -2, -2, -1, 1, 2, 2, 1};
 		int[] horizontal = {2, 1, -1, -2, -2, -1, 1, 2};	
 		
-		JButton moveLegal0 = tabuleiro[casaLocal[0] + vertical[0]][casaLocal[1] + horizontal[0]];
-		JButton moveLegal1 = tabuleiro[casaLocal[0] + vertical[1]][casaLocal[1] + horizontal[1]];
-		JButton moveLegal2 = tabuleiro[casaLocal[0] + vertical[2]][casaLocal[1] + horizontal[2]];
-		JButton moveLegal3 = tabuleiro[casaLocal[0] + vertical[3]][casaLocal[1] + horizontal[3]];
-		JButton moveLegal4 = tabuleiro[casaLocal[0] + vertical[4]][casaLocal[1] + horizontal[4]];
-		JButton moveLegal5 = tabuleiro[casaLocal[0] + vertical[5]][casaLocal[1] + horizontal[5]];
-		JButton moveLegal6 = tabuleiro[casaLocal[0] + vertical[6]][casaLocal[1] + horizontal[6]];
-		JButton moveLegal7 = tabuleiro[casaLocal[0] + vertical[7]][casaLocal[1] + horizontal[7]];
-		
-		JButton[] casasLegais = {moveLegal0, moveLegal1, moveLegal2, moveLegal3, moveLegal4, moveLegal5, moveLegal6,
-				moveLegal7};
+		for (int i = 0; i < 8; i++) {
+			try {
+				casasLegais[i] = tabuleiro[casaLocal[0] + vertical[i]][casaLocal[1] + horizontal[i]];
+			} catch (ArrayIndexOutOfBoundsException e) {
+				System.out.println(e);
+			}
+		}		
+	}
+	
+	public boolean isLegal(JButton casa) {
+		boolean legalChek = false;
 		
 		for (int i = 0; i < 8; i++) {
-			for (int j = 0; j < 8; j++) {
-				if ((i + j) % 2 == 0 & !tabuleiro[i][j].isEnabled()) {
-					tabuleiro[i][i].setBackground(Color.white);
-				} else {
-					tabuleiro[i][i].setBackground(Color.LIGHT_GRAY);
-				}
+			if (casa == casasLegais[i]) {
+				legalChek = true;
 			}
 		}
-		
-		for (JButton cl : casasLegais) {
-			cl.setBackground(Color.red);
-		}
+		return legalChek;		
 	}
+	
 	public class MoveListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {			
-			JButton casaAtual = (JButton) e.getSource();
-			casaAtual.setEnabled(false);
-			casaAtual.setBackground(Color.CYAN);
-			casaAtual.setText("" + jogada++);
-			locaisMarcados.add(casaAtual);			
-			pintarCasaLegal(casaAtual);
+			JButton casaAtual = (JButton) e.getSource();			
+			if (locaisMarcados.isEmpty()) {
+				casaAtual.setEnabled(false);
+				casaAtual.setBackground(Color.CYAN);
+				casaAtual.setText("" + jogada++);
+				locaisMarcados.add(casaAtual);
+			} else {
+				setCasaLegal(locaisMarcados.get(jogada - 1));
+				if (isLegal(casaAtual)) {
+					casaAtual.setEnabled(false);
+					casaAtual.setBackground(Color.CYAN);
+					casaAtual.setText("" + jogada++);
+					locaisMarcados.add(casaAtual);
+				}
+			}
 		}
 	}	
 
