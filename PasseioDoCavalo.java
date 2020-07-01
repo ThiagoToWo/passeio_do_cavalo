@@ -1,23 +1,29 @@
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 
 public class PasseioDoCavalo extends JFrame{	
 	
 	private JButton[][] tabuleiro = new JButton[8][8];
 	private Map<JButton, int[]> local = new HashMap<>();
 	private ArrayList<JButton> locaisMarcados = new ArrayList<JButton>();
-	JButton[] casasLegais = new JButton[8];
+	private JButton[] casasLegais = new JButton[8];
+	private boolean isShow = false;
 	
 	private int jogada = 0;
 	
@@ -38,8 +44,19 @@ public class PasseioDoCavalo extends JFrame{
 		menuBar.add(menu);
 		setJMenuBar(menuBar);
 		
+		JPanel northPanel = new JPanel();
+		JButton botReturn = new JButton("<<");
+		botReturn.addActionListener(new DesfazListener());
+		JCheckBox optionSeeMove = new JCheckBox("Mostrar movimentos legais");
+		optionSeeMove.addItemListener(new SeeMoveListener());
+		northPanel.add(botReturn);
+		northPanel.add(optionSeeMove);
+		getContentPane().add(BorderLayout.NORTH, northPanel);
+		
+		JPanel centerPanel = new JPanel();
 		GridLayout grid = new GridLayout(8, 8);
-		setLayout(grid);
+		centerPanel.setLayout(grid);
+		add(centerPanel);
 		
 		MoveListener move = new MoveListener();
 		
@@ -54,7 +71,7 @@ public class PasseioDoCavalo extends JFrame{
 				tabuleiro[i][j] = casa;
 				local.put(tabuleiro[i][j], new int[]{i, j});
 				casa.addActionListener(move);
-				add(casa);
+				centerPanel.add(casa);
 			}
 		}
 		
@@ -79,6 +96,17 @@ public class PasseioDoCavalo extends JFrame{
 		}		
 	}
 	
+	private void paintCasaLegal() {
+
+		for (int i = 0; i < 8; i++) {
+			try {
+				casasLegais[i].setBackground(Color.red);
+			} catch (ArrayIndexOutOfBoundsException e) {
+				System.out.println(e);
+			}
+		}
+	}
+	
 	public boolean isLegal(JButton casa) {
 		boolean legalChek = false;
 		
@@ -92,21 +120,25 @@ public class PasseioDoCavalo extends JFrame{
 	
 	public class MoveListener implements ActionListener {
 		@Override
-		public void actionPerformed(ActionEvent e) {			
-			JButton casaAtual = (JButton) e.getSource();			
+		public void actionPerformed(ActionEvent e) {
+			JButton casaAtual = (JButton) e.getSource();
+			
 			if (locaisMarcados.isEmpty()) {
 				casaAtual.setEnabled(false);
 				casaAtual.setBackground(Color.CYAN);
 				casaAtual.setText("" + jogada++);
 				locaisMarcados.add(casaAtual);
+				
 			} else {
 				setCasaLegal(locaisMarcados.get(jogada - 1));
+				
 				if (isLegal(casaAtual)) {
 					casaAtual.setEnabled(false);
 					casaAtual.setBackground(Color.CYAN);
 					casaAtual.setText("" + jogada++);
 					locaisMarcados.add(casaAtual);
 				}
+				
 			}
 		}
 	}	
@@ -138,4 +170,17 @@ public class PasseioDoCavalo extends JFrame{
 		}
 
 	}
+	
+	public class SeeMoveListener implements ItemListener {
+
+		@Override
+		public void itemStateChanged(ItemEvent arg0) {
+			JCheckBox cb = (JCheckBox) arg0.getItem();
+			if (cb.isSelected()) {
+				isShow = true;
+			} else {
+				isShow = false;
+			}
+		}
+	}	
 }
