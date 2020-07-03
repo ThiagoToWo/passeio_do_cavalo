@@ -55,13 +55,15 @@ public class Tabuleiro extends JFrame{
 		
 	public void construir() {
 		
+		super.setTitle("O Passeio do Cavalo");
+		
 		tabuleiro = new JButton[linha][coluna];
 		
 		JMenuBar menuBar = new JMenuBar();
 		JMenu menu = new JMenu("Comandos");
-		JMenuItem desfazerItem = new JMenuItem("desfazer");
+		JMenuItem desfazerItem = new JMenuItem("desfazer último movimento");
 		desfazerItem.addActionListener(new DesfazListener());
-		JMenuItem novoItem = new JMenuItem("novo");
+		JMenuItem novoItem = new JMenuItem("novo jogo");
 		novoItem.addActionListener(new NovoListener());
 		JMenu menuSobre = new JMenu("Informações");
 		JMenuItem autoria = new JMenuItem("Autor");
