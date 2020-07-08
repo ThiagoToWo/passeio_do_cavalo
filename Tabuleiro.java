@@ -46,13 +46,33 @@ public class Tabuleiro extends JFrame{
 			+ " Jaenisch em 1862.\n O exercício tem pouco a ver com o xadrez e existe a possibilidade do problema anteceder"
 			+ " o jogo e o movimento\n do cavalo ter sido retirado do problema. Durante séculos muitas variações desse"
 			+ " problema foram estudadas\n por matemáticos, incluindo Euler que em 1759 foi o primeiro a estudar"
-			+ " cientificamente esse problema.\n\n Fonte: https://pt.wikipedia.org/wiki/Problema_do_cavalo";
-	
+			+ " cientificamente esse problema.\n\n Fonte: https://pt.wikipedia.org/wiki/Problema_do_cavalo";	
+
 	public Tabuleiro(int linha, int coluna) {
 		this.linha = linha;
 		this.coluna = coluna;
 	}
-		
+	
+	public JButton getTabuleiro(int linha, int coluna) {
+		return tabuleiro[linha][coluna];
+	}
+
+	public int[] getLocal(JButton casa) {
+		return local.get(casa);
+	}
+
+	public JButton getLocaisMarcados(int i) {
+		return locaisMarcados.get(i);
+	}
+
+	public JButton getCasasLegais(int i) {
+		return casasLegais.get(i);
+	}
+	
+	public int getSizeCasasLegais() {
+		return casasLegais.size();
+	}
+	
 	public void construir() {
 		
 		super.setTitle("O Passeio do Cavalo");
@@ -124,7 +144,31 @@ public class Tabuleiro extends JFrame{
 		setVisible(true);		
 	}
 	
-	private void setCasaLegal(JButton casa) {
+	public void move(JButton casa) {
+		paintTabuleiro();
+		
+		casaAtual = casa;
+		
+		if (locaisMarcados.isEmpty()) {
+			casaAtual.setEnabled(false);
+			casaAtual.setBackground(Color.CYAN);
+			casaAtual.setText("" + ++jogada);
+			locaisMarcados.add(casaAtual);
+			
+		} else {
+			setCasaLegal(locaisMarcados.get(jogada - 1));
+			
+			if (isLegal(casaAtual)) {
+				casaAtual.setEnabled(false);
+				casaAtual.setBackground(Color.CYAN);
+				casaAtual.setText("" + ++jogada);
+				locaisMarcados.add(casaAtual);
+			}
+			
+		}
+	}
+	
+	public void setCasaLegal(JButton casa) {
 		
 		int[] casaLocal = local.get(casa);
 		int[] vertical = {-1, -2, -2, -1, 1, 2, 2, 1};
@@ -139,7 +183,7 @@ public class Tabuleiro extends JFrame{
 			boolean isLinhaLegal = (linhaLegal >= 0) && (linhaLegal < linha);
 			boolean isColunaLegal = (colunaLegal >= 0) && (colunaLegal < coluna);
 			
-			if (isLinhaLegal && isColunaLegal) {
+			if (isLinhaLegal && isColunaLegal && tabuleiro[linhaLegal][colunaLegal].isEnabled()) {
 				casasLegais.add(tabuleiro[linhaLegal][colunaLegal]);
 			}
 		}		
@@ -165,9 +209,7 @@ public class Tabuleiro extends JFrame{
 		setCasaLegal(locaisMarcados.get(jogada - 1));
 		
 		for (JButton cl : casasLegais) {
-			if (cl.isEnabled()) {
-				cl.setBackground(Color.red);;
-			}
+			cl.setBackground(Color.red);
 		}
 	}
 	
@@ -184,28 +226,11 @@ public class Tabuleiro extends JFrame{
 	
 	public class MoveListener implements ActionListener {
 		@Override
-		public void actionPerformed(ActionEvent e) {
-			paintTabuleiro();
+		public void actionPerformed(ActionEvent e) {			
+			JButton casaClicada = (JButton) e.getSource();
 			
-			casaAtual = (JButton) e.getSource();
+			move(casaClicada);
 			
-			if (locaisMarcados.isEmpty()) {
-				casaAtual.setEnabled(false);
-				casaAtual.setBackground(Color.CYAN);
-				casaAtual.setText("" + ++jogada);
-				locaisMarcados.add(casaAtual);
-				
-			} else {
-				setCasaLegal(locaisMarcados.get(jogada - 1));
-				
-				if (isLegal(casaAtual)) {
-					casaAtual.setEnabled(false);
-					casaAtual.setBackground(Color.CYAN);
-					casaAtual.setText("" + ++jogada);
-					locaisMarcados.add(casaAtual);
-				}
-				
-			}
 		}
 	}	
 
