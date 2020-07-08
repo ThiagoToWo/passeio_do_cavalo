@@ -19,6 +19,7 @@ public class Analisador {
 
 		tabuleiro.move(casaInicial); // se move para a casa
 		tabuleiro.setCasaLegal(casaInicial); // define as casas legais para se ir no próximo passo
+		redefinirAcessibilidade(tabuleiro, casaInicial);
 		int tamanhoCasasLegais = tabuleiro.getSizeCasasLegais(); // captura o tamanho da lista de casas legais
 		
 		//esvazia a lista com os valores de acessibilidade das próximas casas
@@ -54,8 +55,19 @@ public class Analisador {
 		return indiceDaProximaCasa;		
 	}
 	
-	public void redefinirAcessibilidade() {
+	public void redefinirAcessibilidade(Tabuleiro tabuleiro,JButton casaRecente) {
 		
-		//for (int i = 0; i < 64; i++)
+		int tamanhoCasasLegais = tabuleiro.getSizeCasasLegais(); // pega o tamanho da lista de casas legais
+		
+		int[] localCasaRecente = tabuleiro.getLocal(casaRecente); // paga o local da casa recente
+		tabuleiroHeuristico[localCasaRecente[0]][localCasaRecente[1]] = 0; // configura esse local como 0 no tabuleiro heurístico
+
+		for (int i = 0; i < tamanhoCasasLegais; i++) { // configura novos valores para as casas legais da casa recente			
+			JButton casa = tabuleiro.getCasasLegais(i); // pega uma casa legal
+			int[] localCasaLegal = tabuleiro.getLocal(casa); // captura o endereço dela
+			
+			tabuleiroHeuristico[localCasaLegal[0]][localCasaLegal[1]]--;// decrementa no mesmo local no tabuleiro heurístico			
+		}
+
 	}
 }
