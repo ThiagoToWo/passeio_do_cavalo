@@ -4,22 +4,76 @@ import javax.swing.JButton;
 
 public class Analisador {
 	
-	int[][] tabuleiroHeuristico = {{2, 3, 4, 4, 4, 4, 3, 2},
-			   					   {3, 4, 6, 6, 6, 6, 4, 3},
-			                       {4, 6, 8, 8, 8, 8, 6, 4},	
-			                       {4, 6, 8, 8, 8, 8, 6, 4},
-			                       {4, 6, 8, 8, 8, 8, 6, 4},
-			                       {4, 6, 8, 8, 8, 8, 6, 4},
-			                       {3, 4, 6, 6, 6, 6, 4, 3},
-			                       {2, 3, 4, 4, 4, 4, 3, 2}};
+	private int[][] tabuleiroHeuristico8x8 = {{2, 3, 4, 4, 4, 4, 3, 2},
+			   					              {3, 4, 6, 6, 6, 6, 4, 3},
+			   					              {4, 6, 8, 8, 8, 8, 6, 4},	
+			   					              {4, 6, 8, 8, 8, 8, 6, 4},
+			   					              {4, 6, 8, 8, 8, 8, 6, 4},
+			   					              {4, 6, 8, 8, 8, 8, 6, 4},
+			   					              {3, 4, 6, 6, 6, 6, 4, 3},
+			   					              {2, 3, 4, 4, 4, 4, 3, 2}};
+	
+	private int[][] tabuleiroHeuristico3x4 = {{2, 3, 3, 2},
+											  {2, 2, 2, 2},
+											  {2, 3, 3, 2}};
+	
+	private int[][] tabuleiroHeuristico3x7 = {{2, 3, 4, 4, 4, 3, 2},
+			                                  {2, 2, 4, 4, 4, 2, 2},
+			                                  {2, 3, 4, 4, 4, 3, 2}};
+	
+	private int[][] tabuleiroHeuristico3x8 = {{2, 3, 4, 4, 4, 4, 3, 2},
+				               			      {2, 2, 4, 4, 4, 4, 2, 2},
+				               			      {2, 3, 4, 4, 4, 4, 3, 2}};
+	
+	private int[][] tabuleiroHeuristico3x9 = {{2, 3, 4, 4, 4, 4, 4, 3, 2},
+            								  {2, 2, 4, 4, 4, 4, 4, 2, 2},
+            								  {2, 3, 4, 4, 4, 4, 4, 3, 2}};
+	
+	private int[][] tabuleiroHeuristico3x10 = {{2, 3, 4, 4, 4, 4, 4, 4, 3, 2},
+											   {2, 2, 4, 4, 4, 4, 4, 4, 2, 2},
+											   {2, 3, 4, 4, 4, 4, 4, 4, 3, 2}};
+	
+	private int[][] tabuleiroHeuristico5x5 = {{2, 3, 4, 3, 2},
+			  								  {3, 4, 6, 4, 3},
+			  								  {4, 6, 8, 6, 4},
+			  								  {3, 4, 6, 4, 3},
+			  								  {2, 3, 4, 3, 2}};
+	
+	public int[][] getAcessibilidade8x8() {		
+		return tabuleiroHeuristico8x8;
+	}
+           
+	public int[][] getAcessibilidade3x4() {		
+		return tabuleiroHeuristico3x4;
+	}
+	
+	public int[][] getAcessibilidade3x7() {		
+		return tabuleiroHeuristico3x7;
+	}
+	
+	public int[][] getAcessibilidade3x8() {		
+		return tabuleiroHeuristico3x8;
+	}
+	
+	public int[][] getAcessibilidade3x9() {		
+		return tabuleiroHeuristico3x9;
+	}
+	
+	public int[][] getAcessibilidade3x10() {		
+		return tabuleiroHeuristico3x10;
+	}
+	
+	public int[][] getAcessibilidade5x5() {		
+		return tabuleiroHeuristico5x5;
+	}
 	
 	ArrayList<Integer> valorProximasCasas = new ArrayList<Integer>();
 
-	public void analisar(Tabuleiro tabuleiro, JButton casaInicial) {
+	public void analisar(Tabuleiro tabuleiro, JButton casaInicial, int[][] tabuleiroHeuristico) {
 
 		tabuleiro.move(casaInicial); // se move para a casa
 		tabuleiro.setCasaLegal(casaInicial); // define as casas legais para se ir no próximo passo
-		redefinirAcessibilidade(tabuleiro, casaInicial);
+		redefinirAcessibilidade(tabuleiro, casaInicial, tabuleiroHeuristico);
 		int tamanhoCasasLegais = tabuleiro.getSizeCasasLegais(); // captura o tamanho da lista de casas legais
 		
 		//esvazia a lista com os valores de acessibilidade das próximas casas
@@ -38,7 +92,7 @@ public class Analisador {
 		int indexProximaCasa = encontrarIndexProximaCasa(valorProximasCasas);
 		JButton proximaCasa = tabuleiro.getCasasLegais(indexProximaCasa); // captura a casa desse índice
 
-		analisar(tabuleiro, proximaCasa); // repete recursivamente
+		analisar(tabuleiro, proximaCasa, tabuleiroHeuristico); // repete recursivamente
 	}
 
 	private int encontrarIndexProximaCasa(ArrayList<Integer> valorDasJogadas) {
@@ -55,7 +109,7 @@ public class Analisador {
 		return indiceDaProximaCasa;		
 	}
 	
-	public void redefinirAcessibilidade(Tabuleiro tabuleiro,JButton casaRecente) {
+	private void redefinirAcessibilidade(Tabuleiro tabuleiro,JButton casaRecente, int[][] tabuleiroHeuristico) {
 		
 		int tamanhoCasasLegais = tabuleiro.getSizeCasasLegais(); // pega o tamanho da lista de casas legais
 		
@@ -70,4 +124,5 @@ public class Analisador {
 		}
 
 	}
+	
 }
